@@ -59,7 +59,7 @@ const Registration = () => {
           onPress={() => navigation.navigate("Login")}>
           <Text>Вже є аккаунт? Увійти</Text>
         </Pressable>
-      </View>
+      </View>                       
       </ImageBackground>
     </View>
     </TouchableWithoutFeedback>

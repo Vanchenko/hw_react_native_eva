@@ -40,7 +40,7 @@ const Login = () => {
         value={password}
       />
       <Pressable style={styles.buttonLogin}
-          onPress={() => navigation.navigate("Post")}>
+          onPress={() => navigation.navigate("Home")}>
         <Text style={styles.textBtnLogin}>Увійти</Text>
       </Pressable>
       <Pressable style={styles.buttonRegistration}
