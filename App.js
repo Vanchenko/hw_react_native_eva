@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Registration from './screens/RegistrationScreen.jsx';
 import Login from './screens/LoginScreen.jsx';
 import Home from './screens/Home.jsx'
+import Mycamera from './screens/Mycamera.jsx';
 
 const MainStack = createStackNavigator(); // вказує на групу навігаторів
 
@@ -17,6 +18,8 @@ export default function App() {
         }}>
         <MainStack.Screen name="Registration" component={Registration} />
         <MainStack.Screen name="Login" component={Login} 
+        />
+        <MainStack.Screen name="Mycamera" component={Mycamera} 
         />
         <MainStack.Screen name="Home" component={Home} />
       </MainStack.Navigator>

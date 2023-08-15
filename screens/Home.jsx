@@ -27,9 +27,9 @@ const Tabs = createBottomTabNavigator();
 const Home = () => {
   return (
     <Tabs.Navigator
+      labeled={false}
       screenOptions={({ route }) => ({
         headerShown: false,
-        labeled: false,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           if (route.name === "Post") {
@@ -45,6 +45,8 @@ const Home = () => {
       tabBarOptions={{
         activeTintColor: "tomato",
         inactiveTintColor: "gray",
+        labeled: false,
+        Label: 'none',
       }}
     >
       <Tabs.Screen name="Post" component={Post} options={{tarBarLabel: 'false'}}/>
