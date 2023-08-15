@@ -4,23 +4,9 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Post from './PostsScreen.jsx';
+import CreatePost from './CreatePostsScreen.jsx';
+import Profile from './ProfileScreen.jsx';
 import { Ionicons, AntDesign } from "@expo/vector-icons";
-
-function CreatePost() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Create post!</Text>
-    </View>
-  );
-}
-
-function Profile() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Profile!</Text>
-    </View>
-  );
-}
 
 const Tabs = createBottomTabNavigator();
 

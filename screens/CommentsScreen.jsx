@@ -1,22 +1,22 @@
 import React from 'react';
 import {View,Text, StyleSheet, Button, Alert, Pressable, Image} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Comments from './CommentsScreen.jsx'
+import { AntDesign } from "@expo/vector-icons";
 
  
-const Post = () => {
+const Comments = () => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Публікації</Text>
         <Pressable
           style={styles.pressLogoff}
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => navigation.navigate("Post")}
         >
-          <Image source={require("./image/log-out.png")} />
+          <AntDesign name="arrowleft" size={22} color="black" />
         </Pressable>
+        <Text style={styles.title}>Коментарі</Text>
       </View>
       <View style={styles.wrapper}>
         <Image source={require("./image/ava-romanova.png")} />
@@ -25,10 +25,6 @@ const Post = () => {
           <Text style={styles.email}>email@gmail.com</Text>
         </View>
       </View>
-      <Pressable style={styles.postStyle} 
-      onPress={() => navigation.navigate("Comments")}>
-        <Image source={require("./image/image-post-1.png")} />
-      </Pressable>
     </View>
   );
 };
@@ -42,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 44,
     paddingBottom: 11,
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     borderBottomWidth: 1,
     borderColor: "#E8E8E8",
   },
@@ -50,12 +46,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     fontSize: 17,
     paddingBottom: 5,
+    marginLeft: 80,
     // alignSelf: 'center',
     // justifyContent: 'center',
   },
   pressLogoff: {
     alignSelf: "center",
-    marginLeft: 120,
+    marginLeft: 12,
     paddingRight: 10,
   },
   wrapper: {
@@ -76,9 +73,5 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     fontSize: 11,
   },
-  postStyle: {
-    alignSelf: "center",
-    marginTop: 15,
-  },
 });
-export default Post;
+export default Comments;
