@@ -6,10 +6,10 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Post from './PostsScreen.jsx';
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 
-function Settings() {
+function CreatePost() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Settings!</Text>
+      <Text>Create post!</Text>
     </View>
   );
 }
@@ -50,7 +50,7 @@ const Home = () => {
       }}
     >
       <Tabs.Screen name="Post" component={Post} options={{tarBarLabel: 'false'}}/>
-      <Tabs.Screen name="CreatePost" component={Settings} />
+      <Tabs.Screen name="CreatePost" component={CreatePost} />
       <Tabs.Screen name="Profile" component={Profile} />
     </Tabs.Navigator>
   );
