@@ -15,6 +15,10 @@ const Home = () => {
     <Tabs.Navigator
       labeled={false}
       screenOptions={({ route }) => ({
+        tabBarActiveTintColor: "tomato",
+        tabBarInactiveTintColor: "gray",
+        tabBarShowLabel: false,
+        // tabBarStyle: [ {"display": "flex"}, null ],
         headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
@@ -22,21 +26,19 @@ const Home = () => {
             iconName = focused ? "appstore-o" : "appstore1";
           } else if (route.name === "CreatePost") {
             iconName = focused ? "pluscircleo" : "pluscircle";
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'user' : 'user';
+          } else if (route.name === "Profile") {
+            iconName = focused ? "user" : "user";
           }
           return <AntDesign name={iconName} size={size} color={color} />;
         },
       })}
-      tabBarOptions={{
-        activeTintColor: "tomato",
-        inactiveTintColor: "gray",
-        labeled: false,
-        Label: 'none',
-      }}
     >
-      <Tabs.Screen name="Post" component={Post} options={{tarBarLabel: 'false'}}/>
-      <Tabs.Screen name="CreatePost" component={CreatePost} />
+      <Tabs.Screen name="Post" component={Post} />
+      <Tabs.Screen
+        name="CreatePost"
+        component={CreatePost}
+        options={{ tabBarStyle: { display: "none" } }}
+      />
       <Tabs.Screen name="Profile" component={Profile} />
     </Tabs.Navigator>
   );

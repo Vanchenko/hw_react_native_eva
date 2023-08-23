@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
   title: {
     alignSelf: "center",
     backgroundColor: "#FFFFFF",
+    fontFamily: "Roboto-Medium",
     fontSize: 30,
     paddingBottom: 32,
     justifyContent: "center",
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   textBtnLogin: {
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
     alignSelf: "center",
     justifyContent: "center",

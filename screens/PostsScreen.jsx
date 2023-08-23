@@ -1,11 +1,24 @@
 import React from 'react';
-import {View,Text, StyleSheet, Button, Alert, Pressable, Image} from 'react-native';
+import {View,Text, StyleSheet, Button, Alert, Pressable, Image, FlatList} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Comments from './CommentsScreen.jsx'
+import { Feather } from '@expo/vector-icons';
+import photoPost1 from './image/image-post-1.png';
 
- 
 const Post = () => {
   const navigation = useNavigation();
+  const post = [
+    {
+      id: 1,
+      photo: "./image/image-post-1.png",
+      namePost: "Office",
+      latitude: 48.5324538,
+      longitude: 34.998182,
+      convertedCoordinate: { region: "Dnipro", country: "Ukraine" },
+      commentsCount: 5,
+    },
+  ];
+
+ // console.log(post);
 
   return (
     <View style={styles.container}>
@@ -25,10 +38,76 @@ const Post = () => {
           <Text style={styles.email}>email@gmail.com</Text>
         </View>
       </View>
-      <Pressable style={styles.postStyle} 
-      onPress={() => navigation.navigate("Comments")}>
-        <Image source={require("./image/image-post-1.png")} />
-      </Pressable>
+      <FlatList
+        data={post}
+        renderItem={({
+          item: {
+            id,
+            photo,
+            namePost,
+            latitude,
+            longitude,
+            convertedCoordinate: { region, country },
+            commentsCount,
+          },
+        }) => {
+          return (
+            <View style={styles.subContainer}>
+              <View style={styles.imageContainer}>
+                <Image source={photoPost1} style={styles.image} />
+              </View>
+              <Text style={[{ ...styles.text, ...styles.namePost }]}>
+                {namePost}
+              </Text>
+              <View style={styles.infoThumb}>
+                <Pressable
+                  style={styles.info}
+                  onPress={() => navigation.navigate("Comments")}
+                >
+                  <Feather
+                    name="message-circle"
+                    size={24}
+                    color="#BDBDBD"
+                    style={[
+                      { transform: [{ rotate: "-90deg" }] },
+                      commentsCount
+                        ? { color: "#FF6C00" }
+                        : { color: "#BDBDBD" },
+                    ]}
+                  />
+                  <Text
+                    style={[
+                      styles.textComment,
+                      commentsCount
+                        ? { color: "#212121" }
+                        : { color: "#BDBDBD" },
+                    ]}
+                  >
+                    {commentsCount}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={styles.info}
+                  onPress={() => {
+                    navigation.navigate("Map", {
+                      photo,
+                      namePost,
+                      latitude,
+                      longitude,
+                    });
+                  }}
+                >
+                  <Feather name="map-pin" size={24} color="#BDBDBD" />
+                  <Text
+                    style={[{ ...styles.text, ...styles.locationText }]}
+                  >{`${region}, ${country}`}</Text>
+                </Pressable>
+              </View>
+            </View>
+          );
+        }}
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 };
@@ -48,6 +127,7 @@ const styles = StyleSheet.create({
   },
   title: {
     backgroundColor: "#FFFFFF",
+    fontFamily: "Roboto-Medium",
     fontSize: 17,
     paddingBottom: 5,
     // alignSelf: 'center',
@@ -79,6 +159,43 @@ const styles = StyleSheet.create({
   postStyle: {
     alignSelf: "center",
     marginTop: 15,
+  },
+  subContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 32,
+    marginTop: 10,
+   // alignItems: "center",
+  },
+  imageContainer: {},
+  image: {
+    height: 240,
+    borderRadius: 8,
+  },
+  text: {
+    fontSize: 16,
+    color: "#212121",
+  },
+  namePost: {
+    marginVertical: 8,
+    fontFamily: "Roboto-Medium",
+  },
+  infoThumb: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  info: {
+    flexDirection: "row",
+    gap: 5,
+    alignItems: "center",
+  },
+  textComment: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: "#BDBDBD",
+  },
+  locationText: {
+    fontFamily: "Roboto-Regular",
+    textDecorationLine: "underline",
   },
 });
 export default Post;

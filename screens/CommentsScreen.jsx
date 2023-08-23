@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   },
   title: {
     backgroundColor: "#FFFFFF",
+    fontFamily: "Roboto-Medium",
     fontSize: 17,
     paddingBottom: 5,
     marginLeft: 80,
@@ -66,10 +67,12 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   name: {
+    fontFamily: "Roboto-Medium",
     fontWeight: 700,
     fontSize: 13,
   },
   email: {
+    fontFamily: "Roboto-Regular",
     fontWeight: 400,
     fontSize: 11,
   },

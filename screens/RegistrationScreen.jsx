@@ -3,9 +3,7 @@ import {View,Text, TextInput, StyleSheet, Pressable, Image, ImageBackground, Ale
   KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BackImage from './image/PhotoBG.png';
-import Mycamera from './Mycamera';
 
- 
 const Registration = () => {
   const [login, onChangeLogin] = useState('');
   const [email, onChangeEmail] = useState('');
@@ -15,7 +13,6 @@ const Registration = () => {
   const navigation = useNavigation();
 
   const onAva = () => {
-    <Mycamera/>
   }
   const onCheckRegistration = () => {
     Alert.alert("Registration data :", `${login} and ${email} and ${password}`);
@@ -144,6 +141,7 @@ const styles = StyleSheet.create({
   title: {
     alignSelf: "center",
     backgroundColor: "#FFFFFF",
+    fontFamily: "Roboto-Medium",
     fontSize: 30,
     paddingBottom: 32,
     justifyContent: "center",
@@ -179,6 +177,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   textBtnLogin: {
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
     alignSelf: "center",
     justifyContent: "center",
