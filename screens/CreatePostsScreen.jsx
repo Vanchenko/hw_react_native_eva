@@ -106,7 +106,9 @@ const CreatePostsScreen = () => {
           longitude: geoLocation.coords.longitude,
         };
         setLocation(coords);
+        const date = new Date();
         const testAnswer = await addPostFirebase({
+          createdatetime: date,
           uid: authState.uid,
           namePost,
           convertedCoordinate,

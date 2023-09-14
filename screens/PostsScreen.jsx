@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../redux/selectors";
 import { Feather } from "@expo/vector-icons";
 import { postsCollectionRef } from "../firebase/postsFirebaseOperation";
-import { onSnapshot } from "firebase/firestore";
+import { onSnapshot, query, orderBy } from "firebase/firestore";
 import { auth } from "../firebase/config";
 import { logOut } from "../redux/authSlice";
 
@@ -26,7 +26,8 @@ const Post = () => {
  // console.log('authState', authState);
  
   useEffect(() => {
-   const unsubscribe = onSnapshot(postsCollectionRef, (snapshot) => {
+  const q = query(postsCollectionRef, orderBy("createdatetime","desc"));
+   const unsubscribe = onSnapshot(q, (snapshot) => {
      const newData = snapshot.docs.map((doc) => ({
        ...doc.data(),
        id: doc.id,

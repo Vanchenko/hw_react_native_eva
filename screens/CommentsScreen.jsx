@@ -21,7 +21,7 @@ import {
   addCommentFirebase,
   updatePostCountCommentsFirebase,
 } from "../firebase/postsFirebaseOperation";
-import { onSnapshot, query, where } from "firebase/firestore";
+import { onSnapshot, query, where, orderBy } from "firebase/firestore";
 import { FlatList } from 'react-native-gesture-handler';
 
  
@@ -37,7 +37,7 @@ const Comments = ({ route: { params } }) => {
   //console.log('authState in Comments', authState.photoURL);
 
   useEffect(() => {
-    const q = query(commentsCollectionRef, where("postid", "==", id));
+    const q = query(commentsCollectionRef, where("postid", "==", id), orderBy("postdatetime","desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const newData = [];
       snapshot.forEach((doc) => {
