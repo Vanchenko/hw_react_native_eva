@@ -1,41 +1,75 @@
-import React from 'react';
-import {View,Text, StyleSheet, Button, Alert, Pressable, Image, FlatList} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
-import photoPost1 from './image/image-post-1.png';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  FlatList,
+} from "react-native";
+import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../redux/selectors";
+import { Feather } from "@expo/vector-icons";
+import { postsCollectionRef } from "../firebase/postsFirebaseOperation";
+import { onSnapshot } from "firebase/firestore";
+import { auth } from "../firebase/config";
+import { logOut } from "../redux/authSlice";
 
 const Post = () => {
+  const [post, setPost] = useState([]);
   const navigation = useNavigation();
-  const post = [
-    {
-      id: 1,
-      photo: "./image/image-post-1.png",
-      namePost: "Office",
-      latitude: 48.5324538,
-      longitude: 34.998182,
-      convertedCoordinate: { region: "Dnipro", country: "Ukraine" },
-      commentsCount: 5,
-    },
-  ];
+  const dispatch = useDispatch();
+  const authState = useSelector(selectUser);
 
- // console.log(post);
-
+ // console.log('authState', authState);
+ 
+  useEffect(() => {
+   const unsubscribe = onSnapshot(postsCollectionRef, (snapshot) => {
+     const newData = snapshot.docs.map((doc) => ({
+       ...doc.data(),
+       id: doc.id,
+     }));
+     //console.log('newdata - ', newData);
+     setPost(newData);
+   });
+   return () => {
+     unsubscribe();
+   };
+ }, []);
+  
+  const userLogOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        dispatch(logOut());
+        navigation.navigate("Login");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Публікації</Text>
         <Pressable
           style={styles.pressLogoff}
-          onPress={() => navigation.navigate("Login")}
+          onPress={userLogOut}
         >
           <Image source={require("./image/log-out.png")} />
         </Pressable>
       </View>
       <View style={styles.wrapper}>
-        <Image source={require("./image/ava-romanova.png")} />
+        <Image
+          source={{ uri: authState.photoURL }}
+          style={styles.imageAvatar}
+        />
         <View style={styles.wrapperUserInfo}>
-          <Text style={styles.name}>Natali Romanchuk</Text>
-          <Text style={styles.email}>email@gmail.com</Text>
+          <Text style={styles.name}>{authState.displayName}</Text>
+          <Text style={styles.email}>{authState.email}</Text>
         </View>
       </View>
       <FlatList
@@ -45,16 +79,19 @@ const Post = () => {
             id,
             photo,
             namePost,
-            latitude,
-            longitude,
+            location: { latitude, longitude },
             convertedCoordinate: { region, country },
             commentsCount,
+            uid,
           },
         }) => {
           return (
-            <View style={styles.subContainer}>
+            <View style={styles.subContainer} key={id}>
               <View style={styles.imageContainer}>
-                <Image source={photoPost1} style={styles.image} />
+                <Image
+                  source={{ uri: photo }}
+                  style={styles.imagePost}
+                />
               </View>
               <Text style={[{ ...styles.text, ...styles.namePost }]}>
                 {namePost}
@@ -62,7 +99,14 @@ const Post = () => {
               <View style={styles.infoThumb}>
                 <Pressable
                   style={styles.info}
-                  onPress={() => navigation.navigate("Comments")}
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      photo,
+                      namePost,
+                      id,
+                      uid,
+                    })
+                  }
                 >
                   <Feather
                     name="message-circle"
@@ -130,8 +174,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
     fontSize: 17,
     paddingBottom: 5,
-    // alignSelf: 'center',
-    // justifyContent: 'center',
   },
   pressLogoff: {
     alignSelf: "center",
@@ -143,6 +185,11 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingLeft: 16,
     alignItems: "center",
+  },
+  imageAvatar: {
+    height: 60,
+    width: 60,
+    borderRadius: 16,
   },
   wrapperUserInfo: {
     flexDirection: "column",
@@ -164,10 +211,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 32,
     marginTop: 10,
-   // alignItems: "center",
   },
-  imageContainer: {},
-  image: {
+  imagePost: {
     height: 240,
     borderRadius: 8,
   },

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "72227579608",
+    "project_id": "reactnativeeva2023",
+    "storage_bucket": "reactnativeeva2023.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72227579608:android:d0099657d0714f700819ad",
+        "android_client_info": {
+          "package_name": "com.goit.evareactnative"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "72227579608-dh0hstntm1rtjh7smdufmfoh588aulq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrxfV9sESykAlJ2r-hhYI9u47IFp6krMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72227579608-dh0hstntm1rtjh7smdufmfoh588aulq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

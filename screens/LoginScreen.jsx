@@ -3,18 +3,46 @@ import {View,Text, TextInput, StyleSheet, Button,
  Pressable, Alert, ImageBackground, KeyboardAvoidingView,
  Platform, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from "react-redux";
+import { logIn } from "../redux/authSlice";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/config";
 import BackImage from './image/PhotoBG.png';
 
+const initialState = {
+  email: '',
+  password: '',
+};
+
 const Login = () => {
-  const [email, onChangeEmail] = useState('');
-  const [password, onChangePassword] = useState('');
+  const [state, setState] = useState(initialState);
   const [visiblePassword, useVisiblePassword] = useState(true);
   const [focused, setFocused] = useState(null);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-  const onCheckLogin = () => {
-    Alert.alert('Login data :',`${email} and ${password}`);
-     navigation.navigate("Home");
+  const loginDB = async ({ email, password }) => {
+    try {
+      const credentials = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      return credentials.user;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const onCheckLogin = async() => {
+    const { email, password } = state;
+    if (email && password) {
+      const { emailCr, displayName, uid, photoURL } = await loginDB({
+        email,
+        password,
+      });
+      dispatch(logIn({ email, displayName, uid, photoURL }));
+      navigation.navigate("Home");
+    }
   }
 
   return (
@@ -37,8 +65,10 @@ const Login = () => {
               editable
               numberOfLines={1}
               maxLength={40}
-              onChangeText={(text) => onChangeEmail(text)}
-              value={email}
+              onChangeText={(value) =>
+                setState((prev) => ({ ...prev, email: value }))
+              }
+              value={state.email}
               onFocus={() => setFocused("email")}
               onBlur={() => setFocused(null)}
             />
@@ -55,12 +85,12 @@ const Login = () => {
                 editable
                 numberOfLines={1}
                 maxLength={40}
-                onChangeText={(text) => onChangePassword(text)}
-                value={password}
+                onChangeText={(value) => setState((prev) => ({ ...prev, password: value }))}
+                value={state.password}
                 onFocus={() => setFocused("password")}
                 onBlur={() => setFocused(null)}
               />
-              {password && (
+              {state.password && (
                 <Pressable
                   style={styles.switch}
                   onPress={() => useVisiblePassword(!visiblePassword)}
@@ -75,7 +105,6 @@ const Login = () => {
       <View style={styles.buttonsWrapper}>
         <Pressable
           style={styles.buttonLogin}
-          // onPress={() => navigation.navigate("Home")}>
           onPress={onCheckLogin}
         >
           <Text style={styles.textBtnLogin}>Увійти</Text>
@@ -93,7 +122,6 @@ const Login = () => {
 
 const styles = StyleSheet.create({
   container: {
-    //position: "relative",
     marginTop: "auto",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -105,7 +133,6 @@ const styles = StyleSheet.create({
   image: {
     position: "relative",
     flex: 1,
-    // justifyContent: "flex-end",
   },
   title: {
     alignSelf: "center",
@@ -139,7 +166,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   buttonLogin: {
-    // marginTop: 27,
     height: 51,
     backgroundColor: "#FF6C00",
     justifyContent: "center",
@@ -154,22 +180,7 @@ const styles = StyleSheet.create({
   },
   buttonRegistration: {
     marginTop: 16,
-    // marginBottom: 16,
     alignItems: "center",
   },
 });
 export default Login;
-
-
-{/* <Button
-style={styles.buttonLogin}
-color='#FF6C00'
-title="Увійти"
-onPress={() => navigation.navigate("Post")}
-/>
-<Button
-style={styles.buttonRegistration}
-color='#FF6C00'
-title="Зареєструватися"
-onPress={() => navigation.navigate("Registration")}
-/> */}

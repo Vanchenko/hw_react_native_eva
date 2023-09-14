@@ -15,24 +15,26 @@ import * as Location from "expo-location";
 import * as MediaLibrary from "expo-media-library";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons, Feather, AntDesign, Ionicons } from "@expo/vector-icons";
+import { SimpleLineIcons } from "@expo/vector-icons";
 import { addPost } from "../redux/postSlice";
-import { addPostFirebase, loadPhotoToServer } from "../firebase/postsFirebaseOperation";
+import { updatePostFirebase, loadPhotoToServer } from "../firebase/postsFirebaseOperation";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../redux/selectors";
 
-const CreatePostsScreen = () => {
+const EditPostScreen = ({ route: { params } }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [convertedCoordinate, setConvertedCoordinate] = useState(null);
-  const [capturedPhoto, setCapturedPhoto] = useState(null);
-  const [namePost, setNamePost] = useState('');
+  const [location, setLocation] = useState(params.location);
+  const [convertedCoordinate, setConvertedCoordinate] = useState(params.convertedCoordinate);
+  const [capturedPhoto, setCapturedPhoto] = useState(params.photo);
+  const [namePost, setNamePost] = useState(params.namePost);
   const [isDisabledPublishBtn, setIsDisabledPublishBtn] = useState(false);
 
 
   const authState = useSelector(selectUser);
   // console.log('authState ',authState.uid)
+  //console.log('editPostScreen params.filename ', params)
 
   useEffect(() => {
     (async () => {
@@ -96,18 +98,17 @@ const CreatePostsScreen = () => {
 
   const publishPhoto = async () => {
     try {
+    //  console.log("publishPhoto 1  capturedPhoto", capturedPhoto);
       let geoLocation = await Location.getCurrentPositionAsync({});
       if (location) {
-        const photoFilename = Date.now().toString();
+        const { photoFilename, id } = params;
         const photo = await loadPhotoToServer(capturedPhoto, photoFilename);
-       // console.log("loadPhoto to Storage 2", photo);
         const coords = {
           latitude: geoLocation.coords.latitude,
           longitude: geoLocation.coords.longitude,
         };
         setLocation(coords);
-        const testAnswer = await addPostFirebase({
-          uid: authState.uid,
+        const testAnswer = await updatePostFirebase(id,{
           namePost,
           convertedCoordinate,
           photo,
@@ -116,7 +117,6 @@ const CreatePostsScreen = () => {
             latitude: coords.latitude,
             longitude: coords.longitude,
           },
-          commentsCount: 0,
         });
         dispatch(
           addPost({
@@ -127,7 +127,7 @@ const CreatePostsScreen = () => {
             commentsNumber: 0,
           })
         );
-        navigation.navigate("Post");
+        navigation.navigate("Profile");
         setCapturedPhoto(null);
         setNamePost("");
         setLocation(null);
@@ -143,7 +143,7 @@ const CreatePostsScreen = () => {
     setNamePost("");
     setLocation(null);
     setConvertedCoordinate(null);
-    navigation.navigate("Post") ;
+    navigation.navigate("Profile") ;
    
   };
 
@@ -157,7 +157,7 @@ const CreatePostsScreen = () => {
           >
             <AntDesign name="arrowleft" size={22} color="black" />
           </Pressable>
-          <Text style={styles.title}>Створити публікацію</Text>
+          <Text style={styles.title}>Редагувати публікацію</Text>
         </View>
         <View style={styles.cameraContainer}>
           <View style={styles.cameraIconContainer}>
@@ -346,4 +346,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreatePostsScreen;
+export default EditPostScreen;

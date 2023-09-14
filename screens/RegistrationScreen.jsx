@@ -1,23 +1,69 @@
 import { useState } from "react";
-import {View,Text, TextInput, StyleSheet, Pressable, Image, ImageBackground, Alert,
+import { View,Text, TextInput, StyleSheet, Pressable, ImageBackground,
   KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../redux/selectors";
+import * as ImagePicker from "expo-image-picker";
+import { ImageUser } from "../components/ImageUser/ImageUser";
+import { auth, storage } from "../firebase/config";
+import { logIn } from "../redux/authSlice";
+import { updateProfile, createUserWithEmailAndPassword } from "firebase/auth";
+import { loginDB, loadAvatarToServer } from "../firebase/postsFirebaseOperation";
 import BackImage from './image/PhotoBG.png';
 
+const initialState = {
+  photoURL: null,
+  displayName: null,
+  email: null,
+  password: null,
+};
+
 const Registration = () => {
-  const [login, onChangeLogin] = useState('');
-  const [email, onChangeEmail] = useState('');
-  const [password, onChangePassword] = useState('');
+  const [state, setState] = useState(initialState);
   const [visiblePassword, useVisiblePassword] = useState(true);
   const [focused, setFocused] = useState(null);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  // const authState = useSelector(selectUser);
+  
+//console.log('Local state',state);
+//console.log("authState in RegistrationScreen", authState);
 
-  const onAva = () => {
-  }
-  const onCheckRegistration = () => {
-    Alert.alert("Registration data :", `${login} and ${email} and ${password}`);
-    navigation.navigate("Home");
-  }
+  const onCheckRegistration = async () => {
+    const { displayName, email, password, photoURL } = state;
+    if (displayName && email && password && photoURL) {
+      const test = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const { uid } = await loginDB({
+        email,
+        password,
+      });
+      const storageAvatar = await loadAvatarToServer(photoURL, uid);
+      await setState((prev) => ({ ...prev, photoURL:storageAvatar }));
+      await updateProfile(auth.currentUser, {
+        displayName: displayName,
+        photoURL: storageAvatar,
+      });
+     // console.log("state", email, displayName, uid, photoURL);
+      dispatch(logIn({ email, displayName, uid, photoURL }));
+      setState(initialState);
+      navigation.navigate("Home");
+    }
+  };
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
+   // console.log("registration result", result.assets[0].uri);
+    if (!result.canceled) {
+       const photoURL = result.assets[0].uri;
+       setState((prev) => ({ ...prev, photoURL }));
+     } else {
+       alert("You did not select any image.");
+     }
+  };
 
 return (
   <ImageBackground source={BackImage} style={styles.image}>
@@ -27,18 +73,15 @@ return (
         style={{ flex: 1, justifyContent: "flex-end", zIndex: 10 }}
       >
         <View style={styles.container}>
-          <Image
-            source={require("./image/ava-blank.png")}
-            style={styles.avatar}
+          <ImageUser
+            state={state}
+            onPress={pickImageAsync}
+            onDelete={setState}
           />
-          <Pressable style={styles.pressAvatarAdd} onPress={() => Mycamera}>
-            {/* onPress={() => Alert.alert("Take a picture for avatar!!!!!!!")}> */}
-            <Image source={require("./image/ava-add.png")} />
-          </Pressable>
           <Text style={styles.title}>Реєстрація</Text>
           <TextInput
             style={
-              focused === "login"
+              focused === "name"
                 ? { ...styles.input, ...styles.focusedInput }
                 : { ...styles.input }
             }
@@ -46,9 +89,11 @@ return (
             editable
             numberOfLines={1}
             maxLength={40}
-            onChangeText={(text) => onChangeLogin(text)}
-            value={login}
-            onFocus={() => setFocused("login")}
+            onChangeText={(value) =>
+              setState((prev) => ({ ...prev, displayName: value }))
+            }
+            value={state.displayName}
+            onFocus={() => setFocused("name")}
             onBlur={() => setFocused(null)}
           />
           <TextInput
@@ -61,8 +106,10 @@ return (
             editable
             numberOfLines={1}
             maxLength={40}
-            onChangeText={(text) => onChangeEmail(text)}
-            value={email}
+            onChangeText={(value) =>
+              setState((prev) => ({ ...prev, email: value }))
+            }
+            value={state.email}
             onFocus={() => setFocused("email")}
             onBlur={() => setFocused(null)}
           />
@@ -79,12 +126,14 @@ return (
               editable
               numberOfLines={1}
               maxLength={40}
-              onChangeText={(text) => onChangePassword(text)}
-              value={password}
+              onChangeText={(value) =>
+                setState((prev) => ({ ...prev, password: value }))
+              }
+              value={state.password}
               onFocus={() => setFocused("password")}
               onBlur={() => setFocused(null)}
             />
-            {password && (
+            {state.password && (
               <Pressable
                 style={styles.switch}
                 onPress={() => useVisiblePassword(!visiblePassword)}
@@ -127,7 +176,6 @@ const styles = StyleSheet.create({
     position: "relative",
     flex: 1,
   },
-  registrationWrapper: {},
   avatar: {
     alignSelf: "center",
     marginTop: -60,
